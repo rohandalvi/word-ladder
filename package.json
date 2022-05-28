@@ -1,0 +1,31 @@
+{
+  "name": "word-ladder",
+  "version": "1.0.0",
+  "description": "Server-side implementation for a fun game ",
+  "main": "app.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rohandalvi/word-ladder.git"
+  },
+  "keywords": [
+    "word-ladder",
+    "english",
+    "word",
+    "game",
+    "chat"
+  ],
+  "author": "Rohan D",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rohandalvi/word-ladder/issues"
+  },
+  "homepage": "https://github.com/rohandalvi/word-ladder#readme",
+  "dependencies": {
+    "@google-cloud/firestore": "^5.0.2",
+    "firebase-admin": "^10.2.0",
+    "uuid": "^8.3.2"
+  }
+}
