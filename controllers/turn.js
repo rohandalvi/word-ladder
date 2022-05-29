@@ -15,6 +15,11 @@ exports.whoseTurn = async function(session_id) {
     return await get_whose_turn(session_id);
 }
 
+/**
+ * 
+ * @param {*} session_id 
+ * @returns 0 for agent, 1 for user
+ */
 async function get_whose_turn(session_id) {
     doc = await firestore
     .collection('sessions')

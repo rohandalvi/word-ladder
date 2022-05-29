@@ -25,6 +25,7 @@
   "homepage": "https://github.com/rohandalvi/word-ladder#readme",
   "dependencies": {
     "@google-cloud/firestore": "^5.0.2",
+    "express-asyncify": "^1.0.1",
     "firebase-admin": "^10.2.0",
     "uuid": "^8.3.2"
   }
