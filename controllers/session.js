@@ -23,7 +23,7 @@ exports.get_active_session = async function(phone_number)  {
           }
         } else {
           // set active to false
-          invalidateSession(docs.id);
+          await invalidateSession(docs.id);
         }
     } else if(snap.size > 1) {
       console.log("More than one active sessions found for "+phone_number+" "+snap.docs);
@@ -39,10 +39,8 @@ updateTimeStamp = function(docRef) {
   return docRef.update({'lastUpdateTimeStamp': fire.admin.firestore.Timestamp.now()});
 }
 
-exports.invalidateSession = function(session_id) {
-  return firestore.collection('sessions')
-  .doc(session_id)
-  .update({'active': false});
+exports.invalidateSession = async function(session_id) {
+    return await invalidateSession(session_id);
 }
 
 exports.create_new_session = async function(phone_number, session_id) {
@@ -55,4 +53,10 @@ exports.create_new_session = async function(phone_number, session_id) {
     'turn': 0 // 0 is for agent, 1 is for user
   });
 };
+
+async function invalidateSession(session_id) {
+  return await firestore.collection('sessions')
+  .doc(session_id)
+  .update({'active': false});
+}
 

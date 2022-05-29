@@ -1,7 +1,21 @@
-const { FieldValue } = require('@google-cloud/firestore');
 const fire = require('../common/firebase');
 const firestore = fire.admin.firestore();
 
+exports.addWordToWordsPlayedAndUpdateLastWord = async function(word, session_id) {
+    var lastWordAndWordsPlayedObject = await getLastWordAndWordsPlayed(session_id);
+    var wordsPlayed = lastWordAndWordsPlayedObject.words_played;
+
+    wordsPlayed.push(word);
+    await updateWordsPlayedAndLastWord(wordsPlayed, word, session_id);
+}
+
+exports.updateWordsPlayedAndLastWord = async function(wordsPlayed, lastWord, sessionId) {
+    await updateWordsPlayedAndLastWord(wordsPlayed, lastWord, sessionId);
+}
+
+async function updateWordsPlayedAndLastWord(wordsPlayed, lastWord, sessionId) {
+    await updateFirebase({'last_word': lastWord, 'words_played': wordsPlayed}, sessionId);
+}
 exports.initializeGameSession = async function(session_id) {
 
     var doc = firestore
@@ -16,12 +30,6 @@ exports.initializeGameSession = async function(session_id) {
     });
 }
 
-exports.startGame = async function(session_id) {
-    var word = getRandomWordFromDictionary();
-    updateFirebase({'last_word': word, 'words_played': [word]}, session_id);
-    return word;
-}
-
 /**
  * 
  * @param {*} word 
@@ -30,12 +38,14 @@ exports.startGame = async function(session_id) {
  * If there is no word that can be generated, send appropriate response
  * that would be interpreted as a win for the user.
  */
+
 exports.generateNextWord = async function(word, session_id) {
     if (word == null) {
         var firstWord = await getRandomWordFromDictionary();
         console.log("First word "+firstWord+" for session_id "+session_id);
 
-        await updateFirebase({'last_word': firstWord, 'words_played': [firstWord]}, session_id);
+        await updateWordsPlayedAndLastWord([firstWord], firstWord, session_id);
+        
         return {
             'status': true,
             'messages': ["I'll start the game! Here's the first word", firstWord]
@@ -57,13 +67,13 @@ exports.generateNextWord = async function(word, session_id) {
    var wordMapData = await getWordFromDictionary(word);
 
    var wordMap = wordMapData.data();
-
-   for(const dictionaryWord of wordMap) {
+    console.log("WordMap "+wordMap);
+   for(const dictionaryWord in wordMap) {
        if (!arrayContainsWord(wordsPlayed, dictionaryWord)) {
            // we missed this. update the wordsPlayed array and add this new word
            wordsPlayed.push(dictionaryWord);
-           updateFirebase({'last_word': dictionaryWord, 'words_played': wordsPlayed}, session_id);
-           var definition = wordMap['dictionaryWord'];
+           await updateWordsPlayedAndLastWord(wordsPlayed, dictionaryWord, session_id);
+           var definition = wordMap[dictionaryWord];
            return {
                'status': true,
                'messages': ['I pick '+dictionaryWord, 'It means '+definition]
